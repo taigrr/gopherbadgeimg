@@ -61,6 +61,7 @@ func EncodeToString(imageBits []byte) string {
 // provides a .bin file that's just the raw bytes of the image
 // you can then use a go:embed directive to bake this bin file into your code at
 // compile time (be nice to your editor's memory!).
+// see an example of this in the main_test.go file.
 func WriteToBinFile(filename string, imageBits []byte) error {
 	outf, err := os.Create(filename)
 	if err != nil {
