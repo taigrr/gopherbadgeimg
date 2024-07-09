@@ -12,7 +12,7 @@ import (
 // This code allows you to re-convert a bitmap variable file back
 
 // must build and run the program first, and generate a splash.bin file using
-// ./badgerimg splash <image file here>
+// ./gopherbadgeimg splash <image file here>
 
 //go:embed splash.bin
 var tainigo []byte
