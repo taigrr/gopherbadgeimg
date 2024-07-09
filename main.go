@@ -54,12 +54,15 @@ func main() {
 	fmt.Println(EncodeToString(imgBits))
 }
 
+// EncodeToString is a friendly-named function for hooking into base64
 func EncodeToString(imageBits []byte) string {
 	return base64.StdEncoding.EncodeToString(imageBits)
 }
 
-// provides a .bin file that's just the raw bytes of the image
-// you can then use a go:embed directive to bake this bin file into your code at
+// WriteToBinFile create an go:embed-able file containing the image data.
+//
+// Provides a .bin file that's just the raw bytes of the image.
+// You can then use a go:embed directive to bake this bin file into your code at
 // compile time (be nice to your editor's memory!).
 // see an example of this in the main_test.go file.
 func WriteToBinFile(filename string, imageBits []byte) error {
@@ -72,7 +75,7 @@ func WriteToBinFile(filename string, imageBits []byte) error {
 	return err
 }
 
-// create a go file with the bytes hardcoded into a variable at build
+// Create a go file with the bytes hardcoded into a variable at build
 func WriteToGoFile(filename, variablename string, imageBits []byte) error {
 	outf, err := os.Create(filename)
 	if err != nil {
@@ -101,7 +104,7 @@ func WriteToGoFile(filename, variablename string, imageBits []byte) error {
 	return err
 }
 
-// Loads and decodes filename into image.Image pointer
+// LoadImg loads and decodes filename into image.Image pointer
 func LoadImg(infile string) (*image.Image, error) {
 	f, err := os.Open(infile)
 	if err != nil {
@@ -114,7 +117,7 @@ func LoadImg(infile string) (*image.Image, error) {
 	return &src, nil
 }
 
-// Resize image to requested size and converts to bitmap byte slice
+// ImgToBytes resizes an image to the requested size and converts it to a bitmap byte slice
 func ImgToBytes(x, y int, inputImg *image.Image) []byte {
 	// work on values not pointers
 	src := *inputImg
@@ -161,22 +164,3 @@ func ImgToBytes(x, y int, inputImg *image.Image) []byte {
 	}
 	return imageBits
 }
-
-// This code allows you to re-convert a bitmap variable file back
-//func decodeToPng() {
-//	dst := image.NewRGBA(image.Rect(0, 0, 246, 128))
-//	outPng, _ := os.Create("splash.png")
-//	defer outPng.Close()
-//	for j := 0; j < 246; j++ {
-//		for i := 0; i < 128; i++ {
-//			offset := i + j*128
-//			bit := tainigo[offset/8] & (1 << uint(7-offset%8))
-//			if bit != 0 {
-//				dst.Set(245-j, i, color.RGBA{255, 255, 255, 255})
-//			} else {
-//				dst.Set(245-j, i, color.RGBA{0, 0, 0, 255})
-//			}
-//		}
-//	}
-//	png.Encode(outPng, dst)
-//}
