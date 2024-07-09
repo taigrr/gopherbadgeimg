@@ -11,11 +11,11 @@ Build the tool or install it using the following:
 
 Run it as follows to generate a profile image:
 
-`gopherbadgeimage profile image.jpg`
+`gopherbadgeimag profile image.jpg`
 
 Or, for the splash screen:
 
-`gopherbadgeimage splash image.jpg`
+`gopherbadgeimg splash image.jpg`
 
 This will result in 3 different outputs:
 
