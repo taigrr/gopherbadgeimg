@@ -5,7 +5,6 @@ import (
 	"image"
 	"image/color"
 	_ "image/jpeg"
-	"image/png"
 	"log"
 	"os"
 
@@ -92,20 +91,20 @@ func imgBuild(infile string, x, y int) {
 	outf.Write([]byte("\n}\n"))
 }
 
-func decodeToPng() {
-	dst := image.NewRGBA(image.Rect(0, 0, 246, 128))
-	outPng, _ := os.Create("splash.png")
-	defer outPng.Close()
-	for j := 0; j < 246; j++ {
-		for i := 0; i < 128; i++ {
-			offset := i + j*128
-			bit := tainigo[offset/8] & (1 << uint(7-offset%8))
-			if bit != 0 {
-				dst.Set(245-j, i, color.RGBA{255, 255, 255, 255})
-			} else {
-				dst.Set(245-j, i, color.RGBA{0, 0, 0, 255})
-			}
-		}
-	}
-	png.Encode(outPng, dst)
-}
+//func decodeToPng() {
+//	dst := image.NewRGBA(image.Rect(0, 0, 246, 128))
+//	outPng, _ := os.Create("splash.png")
+//	defer outPng.Close()
+//	for j := 0; j < 246; j++ {
+//		for i := 0; i < 128; i++ {
+//			offset := i + j*128
+//			bit := tainigo[offset/8] & (1 << uint(7-offset%8))
+//			if bit != 0 {
+//				dst.Set(245-j, i, color.RGBA{255, 255, 255, 255})
+//			} else {
+//				dst.Set(245-j, i, color.RGBA{0, 0, 0, 255})
+//			}
+//		}
+//	}
+//	png.Encode(outPng, dst)
+//}
