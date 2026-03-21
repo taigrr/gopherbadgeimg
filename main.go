@@ -35,9 +35,6 @@ func main() {
 	switch os.Args[1] {
 	case "profile":
 		imgBits = ImgToBytes(120, 128, sourceImage)
-		if err != nil {
-			log.Fatalf("error: could not translate image to bytes: %v", err)
-		}
 	case "splash":
 		imgBits = ImgToBytes(246, 128, sourceImage)
 	default:

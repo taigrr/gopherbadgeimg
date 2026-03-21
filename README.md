@@ -7,11 +7,11 @@ All of the most interesting bits in the code are heavily documented in-line.
 
 Build the tool or install it using the following:
 
-`go install github.com/taigrr/gopherbadgeimage@v1.0.0`
+`go install github.com/taigrr/gopherbadgeimg@latest`
 
 Run it as follows to generate a profile image:
 
-`gopherbadgeimag profile image.jpg`
+`gopherbadgeimg profile image.jpg`
 
 Or, for the splash screen:
 
