@@ -194,11 +194,6 @@ func TestWriteToGoFile(t *testing.T) {
 	outPath := filepath.Join(tmp, "test-generated.go")
 	data := []byte{0x01, 0x02, 0x03}
 
-	// WriteToGoFile reads os.Args[0], set it to something known
-	origArgs := os.Args
-	os.Args = []string{"gopherbadgeimg"}
-	defer func() { os.Args = origArgs }()
-
 	if err := WriteToGoFile(outPath, "testVar", data); err != nil {
 		t.Fatalf("WriteToGoFile failed: %v", err)
 	}
@@ -269,5 +264,85 @@ func TestDecodeSplashBin(t *testing.T) {
 	}
 	if info.Size() == 0 {
 		t.Fatal("generated PNG is empty")
+	}
+}
+
+func TestRun_Profile(t *testing.T) {
+	tmp := t.TempDir()
+	imgPath := filepath.Join(tmp, "test.png")
+	createTestImage(t, imgPath, 200, 200)
+
+	// run from tmp dir so generated files land there
+	origDir, _ := os.Getwd()
+	os.Chdir(tmp)
+	defer os.Chdir(origDir)
+
+	err := run([]string{"gopherbadgeimg", "profile", imgPath})
+	if err != nil {
+		t.Fatalf("run profile failed: %v", err)
+	}
+
+	// check that profile-generated.go was created
+	if _, err := os.Stat(filepath.Join(tmp, "profile-generated.go")); err != nil {
+		t.Fatal("profile-generated.go not created")
+	}
+	// check that profile.bin was created
+	info, err := os.Stat(filepath.Join(tmp, "profile.bin"))
+	if err != nil {
+		t.Fatal("profile.bin not created")
+	}
+	if info.Size() != 120*128/8 {
+		t.Fatalf("profile.bin expected %d bytes, got %d", 120*128/8, info.Size())
+	}
+}
+
+func TestRun_Splash(t *testing.T) {
+	tmp := t.TempDir()
+	imgPath := filepath.Join(tmp, "test.png")
+	createTestImage(t, imgPath, 300, 200)
+
+	origDir, _ := os.Getwd()
+	os.Chdir(tmp)
+	defer os.Chdir(origDir)
+
+	err := run([]string{"gopherbadgeimg", "splash", imgPath})
+	if err != nil {
+		t.Fatalf("run splash failed: %v", err)
+	}
+
+	info, err := os.Stat(filepath.Join(tmp, "splash.bin"))
+	if err != nil {
+		t.Fatal("splash.bin not created")
+	}
+	if info.Size() != 246*128/8 {
+		t.Fatalf("splash.bin expected %d bytes, got %d", 246*128/8, info.Size())
+	}
+}
+
+func TestRun_WrongArgCount(t *testing.T) {
+	err := run([]string{"gopherbadgeimg"})
+	if err == nil {
+		t.Fatal("expected error for wrong arg count")
+	}
+}
+
+func TestRun_UnknownCommand(t *testing.T) {
+	tmp := t.TempDir()
+	imgPath := filepath.Join(tmp, "test.png")
+	createTestImage(t, imgPath, 64, 64)
+
+	err := run([]string{"gopherbadgeimg", "invalid", imgPath})
+	if err == nil {
+		t.Fatal("expected error for unknown command")
+	}
+	if !strings.Contains(err.Error(), "unknown command") {
+		t.Fatalf("expected 'unknown command' in error, got: %v", err)
+	}
+}
+
+func TestRun_NonexistentFile(t *testing.T) {
+	err := run([]string{"gopherbadgeimg", "profile", "/nonexistent/file.png"})
+	if err == nil {
+		t.Fatal("expected error for nonexistent file")
 	}
 }
