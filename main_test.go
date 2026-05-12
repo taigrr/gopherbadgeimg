@@ -48,7 +48,7 @@ func TestLoadImg(t *testing.T) {
 	if img == nil {
 		t.Fatal("LoadImg returned nil image")
 	}
-	bounds := (*img).Bounds()
+	bounds := img.Bounds()
 	if bounds.Dx() != 64 || bounds.Dy() != 64 {
 		t.Fatalf("expected 64x64, got %dx%d", bounds.Dx(), bounds.Dy())
 	}
@@ -118,7 +118,7 @@ func TestImgToBytes_AllWhite(t *testing.T) {
 		}
 	}
 	var img image.Image = whiteImg
-	result := ImgToBytes(8, 8, &img)
+	result := ImgToBytes(8, 8, img)
 	for i, b := range result {
 		if b != 0 {
 			t.Fatalf("expected all zeros for white image, got 0x%02X at index %d", b, i)
@@ -135,7 +135,7 @@ func TestImgToBytes_AllBlack(t *testing.T) {
 		}
 	}
 	var img image.Image = blackImg
-	result := ImgToBytes(8, 8, &img)
+	result := ImgToBytes(8, 8, img)
 	for i, b := range result {
 		if b != 0xFF {
 			t.Fatalf("expected all 0xFF for black image, got 0x%02X at index %d", b, i)
