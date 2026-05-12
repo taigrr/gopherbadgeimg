@@ -109,8 +109,8 @@ func WriteToGoFile(filename, variablename string, imageBits []byte) error {
 	return err
 }
 
-// LoadImg loads and decodes filename into image.Image pointer
-func LoadImg(infile string) (*image.Image, error) {
+// LoadImg loads and decodes filename into an image.Image.
+func LoadImg(infile string) (image.Image, error) {
 	f, err := os.Open(infile)
 	if err != nil {
 		return nil, err
@@ -120,13 +120,11 @@ func LoadImg(infile string) (*image.Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &src, nil
+	return src, nil
 }
 
-// ImgToBytes resizes an image to the requested size and converts it to a bitmap byte slice
-func ImgToBytes(x, y int, inputImg *image.Image) []byte {
-	// work on values not pointers
-	src := *inputImg
+// ImgToBytes resizes an image to the requested size and converts it to a bitmap byte slice.
+func ImgToBytes(x, y int, src image.Image) []byte {
 	// create a new, rectangular image that's the size we want
 	dst := image.NewRGBA(image.Rect(0, 0, x, y))
 	// use NearestNeighbor algo to fit our original image into the smaller (or bigger!?) image
@@ -159,7 +157,7 @@ func ImgToBytes(x, y int, inputImg *image.Image) []byte {
 	// (vertical axis must be inner loop) for the badge layout
 	for i := 0; i < x; i++ {
 		for j := 0; j < y; j++ {
-			// grab dithered image point, determine if bit should be 1 or a 0
+			// grab dithered image point, determine if bit should be 1 or 0
 			r, g, b, _ := dithered.At(i, j).RGBA()
 			if r+g+b == 0 {
 				// use bit shifting + integer division & modulo arithmetic to change
