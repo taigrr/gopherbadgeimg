@@ -273,9 +273,7 @@ func TestRun_Profile(t *testing.T) {
 	createTestImage(t, imgPath, 200, 200)
 
 	// run from tmp dir so generated files land there
-	origDir, _ := os.Getwd()
-	os.Chdir(tmp)
-	defer os.Chdir(origDir)
+	t.Chdir(tmp)
 
 	err := run([]string{"gopherbadgeimg", "profile", imgPath})
 	if err != nil {
@@ -301,9 +299,7 @@ func TestRun_Splash(t *testing.T) {
 	imgPath := filepath.Join(tmp, "test.png")
 	createTestImage(t, imgPath, 300, 200)
 
-	origDir, _ := os.Getwd()
-	os.Chdir(tmp)
-	defer os.Chdir(origDir)
+	t.Chdir(tmp)
 
 	err := run([]string{"gopherbadgeimg", "splash", imgPath})
 	if err != nil {
