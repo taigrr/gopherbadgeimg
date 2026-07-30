@@ -15,6 +15,11 @@ import (
 //go:embed splash.bin
 var tainigo []byte
 
+const (
+	profileBytes = profileWidth * profileHeight / 8
+	splashBytes  = splashWidth * splashHeight / 8
+)
+
 // createTestImage generates a small test PNG at the given path.
 func createTestImage(t *testing.T, path string, width, height int) {
 	t.Helper()
@@ -84,10 +89,9 @@ func TestImgToBytes_Profile(t *testing.T) {
 	}
 
 	// profile: 120x128 = 15360 pixels / 8 = 1920 bytes
-	result := ImgToBytes(120, 128, img)
-	expected := 120 * 128 / 8
-	if len(result) != expected {
-		t.Fatalf("expected %d bytes, got %d", expected, len(result))
+	result := ImgToBytes(profileWidth, profileHeight, img)
+	if len(result) != profileBytes {
+		t.Fatalf("expected %d bytes, got %d", profileBytes, len(result))
 	}
 }
 
@@ -102,10 +106,9 @@ func TestImgToBytes_Splash(t *testing.T) {
 	}
 
 	// splash: 246x128 = 31488 pixels / 8 = 3936 bytes
-	result := ImgToBytes(246, 128, img)
-	expected := 246 * 128 / 8
-	if len(result) != expected {
-		t.Fatalf("expected %d bytes, got %d", expected, len(result))
+	result := ImgToBytes(splashWidth, splashHeight, img)
+	if len(result) != splashBytes {
+		t.Fatalf("expected %d bytes, got %d", splashBytes, len(result))
 	}
 }
 
@@ -227,22 +230,22 @@ func TestWriteToGoFile_BadPath(t *testing.T) {
 
 func TestDecodeSplashBin(t *testing.T) {
 	// Verify the embedded splash.bin round-trips to a valid PNG
-	if len(tainigo) != 3936 {
-		t.Fatalf("expected splash.bin to be 3936 bytes, got %d", len(tainigo))
+	if len(tainigo) != splashBytes {
+		t.Fatalf("expected splash.bin to be %d bytes, got %d", splashBytes, len(tainigo))
 	}
 
 	tmp := t.TempDir()
 	outPath := filepath.Join(tmp, "splash.png")
 
-	dst := image.NewRGBA(image.Rect(0, 0, 246, 128))
-	for j := 0; j < 246; j++ {
-		for i := 0; i < 128; i++ {
-			offset := i + j*128
+	dst := image.NewRGBA(image.Rect(0, 0, splashWidth, splashHeight))
+	for j := 0; j < splashWidth; j++ {
+		for i := 0; i < splashHeight; i++ {
+			offset := i + j*splashHeight
 			bit := tainigo[offset/8] & (1 << uint(7-offset%8))
 			if bit != 0 {
-				dst.Set(245-j, i, color.RGBA{R: 255, G: 255, B: 255, A: 255})
+				dst.Set(splashWidth-1-j, i, color.RGBA{R: 255, G: 255, B: 255, A: 255})
 			} else {
-				dst.Set(245-j, i, color.RGBA{R: 0, G: 0, B: 0, A: 255})
+				dst.Set(splashWidth-1-j, i, color.RGBA{R: 0, G: 0, B: 0, A: 255})
 			}
 		}
 	}
@@ -289,8 +292,8 @@ func TestRun_Profile(t *testing.T) {
 	if err != nil {
 		t.Fatal("profile.bin not created")
 	}
-	if info.Size() != 120*128/8 {
-		t.Fatalf("profile.bin expected %d bytes, got %d", 120*128/8, info.Size())
+	if info.Size() != profileBytes {
+		t.Fatalf("profile.bin expected %d bytes, got %d", profileBytes, info.Size())
 	}
 }
 
@@ -310,8 +313,8 @@ func TestRun_Splash(t *testing.T) {
 	if err != nil {
 		t.Fatal("splash.bin not created")
 	}
-	if info.Size() != 246*128/8 {
-		t.Fatalf("splash.bin expected %d bytes, got %d", 246*128/8, info.Size())
+	if info.Size() != splashBytes {
+		t.Fatalf("splash.bin expected %d bytes, got %d", splashBytes, info.Size())
 	}
 }
 
@@ -319,6 +322,16 @@ func TestRun_WrongArgCount(t *testing.T) {
 	err := run([]string{"gopherbadgeimg"})
 	if err == nil {
 		t.Fatal("expected error for wrong arg count")
+	}
+}
+
+func TestRun_NoArgs(t *testing.T) {
+	err := run(nil)
+	if err == nil {
+		t.Fatal("expected error for missing args")
+	}
+	if !strings.Contains(err.Error(), "usage: gopherbadgeimg") {
+		t.Fatalf("expected fallback executable name in error, got: %v", err)
 	}
 }
 
