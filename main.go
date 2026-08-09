@@ -16,6 +16,13 @@ import (
 	_ "golang.org/x/image/webp"
 )
 
+const (
+	profileWidth  = 120
+	profileHeight = 128
+	splashWidth   = 246
+	splashHeight  = 128
+)
+
 func main() {
 	if err := run(os.Args); err != nil {
 		log.Fatal(err)
@@ -23,8 +30,12 @@ func main() {
 }
 
 func run(args []string) error {
+	executableName := "gopherbadgeimg"
+	if len(args) > 0 {
+		executableName = args[0]
+	}
 	if len(args) != 3 {
-		return fmt.Errorf("usage: %v <profile | splash> <infile.png>", args[0])
+		return fmt.Errorf("usage: %v <profile | splash> <infile.png>", executableName)
 	}
 	command := args[1]
 	infile := args[2]
@@ -41,9 +52,9 @@ func run(args []string) error {
 	// splash image is 246x128
 	switch command {
 	case "profile":
-		imgBits = ImgToBytes(120, 128, sourceImage)
+		imgBits = ImgToBytes(profileWidth, profileHeight, sourceImage)
 	case "splash":
-		imgBits = ImgToBytes(246, 128, sourceImage)
+		imgBits = ImgToBytes(splashWidth, splashHeight, sourceImage)
 	default:
 		return fmt.Errorf("unknown command %v", command)
 	}
