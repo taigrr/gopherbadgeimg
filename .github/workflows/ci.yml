@@ -12,7 +12,6 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: dd if=/dev/zero of=splash.bin bs=1 count=3936
       - run: go vet ./...
       - run: go install honnef.co/go/tools/cmd/staticcheck@latest
       - run: staticcheck ./...

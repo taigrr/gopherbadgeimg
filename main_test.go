@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "embed"
 	"encoding/base64"
 	"image"
 	"image/color"
@@ -11,9 +10,6 @@ import (
 	"strings"
 	"testing"
 )
-
-//go:embed splash.bin
-var tainigo []byte
 
 const (
 	profileBytes = profileWidth * profileHeight / 8
@@ -229,9 +225,9 @@ func TestWriteToGoFile_BadPath(t *testing.T) {
 }
 
 func TestDecodeSplashBin(t *testing.T) {
-	// Verify the embedded splash.bin round-trips to a valid PNG
-	if len(tainigo) != splashBytes {
-		t.Fatalf("expected splash.bin to be %d bytes, got %d", splashBytes, len(tainigo))
+	splashData := make([]byte, splashBytes)
+	if len(splashData) != splashBytes {
+		t.Fatalf("expected splash data to be %d bytes, got %d", splashBytes, len(splashData))
 	}
 
 	tmp := t.TempDir()
@@ -241,7 +237,7 @@ func TestDecodeSplashBin(t *testing.T) {
 	for j := 0; j < splashWidth; j++ {
 		for i := 0; i < splashHeight; i++ {
 			offset := i + j*splashHeight
-			bit := tainigo[offset/8] & (1 << uint(7-offset%8))
+			bit := splashData[offset/8] & (1 << uint(7-offset%8))
 			if bit != 0 {
 				dst.Set(splashWidth-1-j, i, color.RGBA{R: 255, G: 255, B: 255, A: 255})
 			} else {
