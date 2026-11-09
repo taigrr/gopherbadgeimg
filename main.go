@@ -128,8 +128,8 @@ func ImgToBytes(x, y int, src image.Image) []byte {
 
 	// Our e-ink display uses one bit for each pixel, on or off.
 	// Therefore, we need one bit for each pixel.
-	// Since we have a byte slice, and 8 bytes per bit, divide by 8
-	imageBits := make([]byte, x*y/8)
+	// Each byte holds 8 pixels; round up to retain a partial final byte.
+	imageBits := make([]byte, (x*y+7)/8)
 
 	// Again, on or off, white or black are our only color options
 	palette := []color.Color{

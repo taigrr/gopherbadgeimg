@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/base64"
 	"image"
 	"image/color"
@@ -349,5 +350,27 @@ func TestRun_NonexistentFile(t *testing.T) {
 	err := run([]string{"gopherbadgeimg", "profile", "/nonexistent/file.png"})
 	if err == nil {
 		t.Fatal("expected error for nonexistent file")
+	}
+}
+
+func TestImgToBytes_PartialByte(t *testing.T) {
+	for _, test := range []struct {
+		name          string
+		width, height int
+		want          []byte
+	}{
+		{"single pixel", 1, 1, []byte{0x80}},
+		{"short byte", 1, 7, []byte{0xFE}},
+		{"exact byte", 2, 4, []byte{0xFF}},
+		{"partial second byte", 3, 3, []byte{0xFF, 0x80}},
+		{"multiple columns", 5, 3, []byte{0xFF, 0xFE}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			source := image.NewGray(image.Rect(0, 0, test.width, test.height))
+			got := ImgToBytes(test.width, test.height, source)
+			if !bytes.Equal(got, test.want) {
+				t.Fatalf("bitmap = % X, want % X", got, test.want)
+			}
+		})
 	}
 }
