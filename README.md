@@ -5,6 +5,8 @@ the 2024 gophercon badger-w (and therefore most TinyGo devices!).
 
 All of the most interesting bits in the code are heavily documented in-line.
 
+Requires Go 1.27.4 or later.
+
 Build the tool or install it using the following:
 
 `go install github.com/taigrr/gopherbadgeimg@latest`
